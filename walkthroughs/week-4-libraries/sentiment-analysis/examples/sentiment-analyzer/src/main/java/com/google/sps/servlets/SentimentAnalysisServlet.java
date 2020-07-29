@@ -25,6 +25,16 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/sentiment")
 public class SentimentAnalysisServlet extends HttpServlet {
+  private LanguageServiceClientFactory languageServiceClientFactory;
+
+  @Override
+  public void init() {
+    languageServiceClientFactory = new LanguageServiceClientFactoryImpl();
+  }
+
+  void setLanguageServiceClientFactory(LanguageServiceClientFactory factory) {
+    languageServiceClientFactory = factory;
+  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -32,7 +42,7 @@ public class SentimentAnalysisServlet extends HttpServlet {
 
     Document doc =
         Document.newBuilder().setContent(message).setType(Document.Type.PLAIN_TEXT).build();
-    LanguageServiceClient languageService = LanguageServiceClient.create();
+    LanguageServiceClient languageService = languageServiceClientFactory.newInstance();
     Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
     float score = sentiment.getScore();
     languageService.close();
