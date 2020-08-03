@@ -18,6 +18,7 @@ import com.google.sps.data.ServerStats;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +38,7 @@ public final class ServerStatsServlet extends HttpServlet {
 
     // Convert the server stats to JSON
     ServerStats serverStats = new ServerStats(startTime, currentTime, maxMemory, usedMemory);
-    String json = convertToJson(serverStats);
+    String json = convertToJsonUsingGson(serverStats);
 
     // Send the JSON as the response
     response.setContentType("application/json;");
@@ -70,7 +71,12 @@ public final class ServerStatsServlet extends HttpServlet {
    */
   private String convertToJsonUsingGson(ServerStats serverStats) {
     Gson gson = new Gson();
-    String json = gson.toJson(serverStats);
+    HashMap<String, Object> serverStatsMap = new HashMap<>();
+    serverStatsMap.put("startTime", serverStats.getStartTime());
+    serverStatsMap.put("currentTime", serverStats.getCurrentTime());
+    serverStatsMap.put("maxMemory", serverStats.getMaxMemory());
+    serverStatsMap.put("usedMemory", serverStats.getUsedMemory());
+    String json = gson.toJson(serverStatsMap);
     return json;
   }
 }
